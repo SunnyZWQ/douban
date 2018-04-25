@@ -86,6 +86,66 @@
 #                     f.write(str(i).strip().replace('\n', '')+'\n')
 
 
+
+
+# import scrapy
+# import sys
+# from myscrapy.items import MyscrapyItem,bookLink,book
+
+
+# class doubanSpider(scrapy.Spider):
+#     name = 'tagLink'
+#     start_urls = [
+#         'https://book.douban.com/tag/%E5%B0%8F%E8%AF%B4'
+#     ]
+
+#     def parse(self, response):
+#         reload(sys)
+#         sys.setdefaultencoding('utf-8')
+#         bookListItem = bookLink()
+#         book_list = response.css('ul.subject-list')
+#         with open('bookLink.txt', 'w') as f:
+#             for item in book_list.css('li.subject-item'):
+#                 book_name = item.css('h2 a::text').extract().strip()
+#                 book_link = item.css().extract('h2 a::attr(href)').extract().strip()
+
+#                 bookListItem['book_name'] = book_name
+#                 bookListItem['book_link'] = book_link
+#                 book_list = response.urljoin(book_link)
+#                 yield scrapy.Request(book_list, self.book_parse)
+
+#             f.write(bookListItem.book_name + '\t' + bookListItem.book_link)
+
+#         next_page = response.css('span.next a::attr(href)').extract().strip()
+#         if next_page is not None:
+#             next_page = response.urljoin(next_page)
+#             yield scrapy.Request(next_page, callback=self.parse)
+
+#     def book_parse(self, response):
+#         reload(sys)
+#         sys.setdefaultencoding('utf-8')
+#         bookItem = book()
+#         bookItem['book_name'] = response.css('h1 span::text').extract().strip()
+#         bookItem['ave_rate'] = response.css('').extract().strip()
+#         bookItem['comment_num'] = response.css('').extract().strip()
+#         bookItem['rate5'] = response.css('').extract().strip()
+#         bookItem['rate4'] = response.css('').extract().strip()
+#         bookItem['rate3'] = response.css('').extract().strip()
+#         bookItem['rate2'] = response.css('').extract().strip()
+#         bookItem['rate1'] = response.css('').extract().strip()
+#         bookItem['author'] = response.css('').extract().strip()
+#         bookItem['original_name'] = response.css('').extract().strip()
+#         bookItem['translator'] = response.css('').extract().strip()
+#         bookItem['public_year'] = response.css('').extract().strip()
+#         bookItem['rate5'] = response.css('').extract().strip()
+#         bookItem['rate5'] = response.css('').extract().strip()
+#         bookItem['rate5'] = response.css('').extract().strip()
+#         bookItem['rate5'] = response.css('').extract().strip()
+#         bookItem['rate5'] = response.css('').extract().strip()
+
+
+
+
 import scrapy
 import sys
 from myscrapy.items import MyscrapyItem,bookLink,book
@@ -93,11 +153,24 @@ from myscrapy.items import MyscrapyItem,bookLink,book
 
 class doubanSpider(scrapy.Spider):
     name = 'tagLink'
+    # start_urls = [
+    #     'https://book.douban.com/tag/%E5%B0%8F%E8%AF%B4'
+    # ]
+
     start_urls = [
-        'https://book.douban.com/tag/%E5%B0%8F%E8%AF%B4'
+        'https://book.douban.com/tag/?view=type&icn=index-sorttags-hot'
     ]
 
     def parse(self, response):
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+        for href in response.css('table.tagCol a::attr(href)').extract():
+            tag_list = response.urljoin(href)
+            yield scrapy.Request(tag_list, self.book_list_parse)
+            # print(type(href))
+
+    
+    def book_list_parse(self, response):
         reload(sys)
         sys.setdefaultencoding('utf-8')
         bookListItem = bookLink()
@@ -106,9 +179,6 @@ class doubanSpider(scrapy.Spider):
             for item in book_list.css('li.subject-item'):
                 book_name = item.css('h2 a::text').extract().strip()
                 book_link = item.css().extract('h2 a::attr(href)').extract().strip()
-
-                bookListItem['book_name'] = book_name
-                bookListItem['book_link'] = book_link
                 book_list = response.urljoin(book_link)
                 yield scrapy.Request(book_list, self.book_parse)
 
@@ -140,6 +210,7 @@ class doubanSpider(scrapy.Spider):
         bookItem['rate5'] = response.css('').extract().strip()
         bookItem['rate5'] = response.css('').extract().strip()
         bookItem['rate5'] = response.css('').extract().strip()
+
 
 
 
