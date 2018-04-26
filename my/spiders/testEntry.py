@@ -4,7 +4,7 @@ from my.items import MyscrapyItem,bookLink,book
 
 
 class doubanSpider(scrapy.Spider):
-    name = 'tagLink'
+    name = 'testEntry'
     
     start_urls = [
         'https://book.douban.com/subject/25862578/'
@@ -15,4 +15,6 @@ class doubanSpider(scrapy.Spider):
         sys.setdefaultencoding('utf-8')
         a = response.css('div.subject\ clearfix')
         print(a)
+        with open('textEntry.txt', 'w') as f:
+            f.write(a)
  
